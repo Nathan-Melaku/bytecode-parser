@@ -128,16 +128,16 @@ public class ClassFile {
         sb.append("\n");
         sb.append("Fields: ").append(fields.length).append("\n");
         for (var f : fields) {
-            sb.append(f.toString(this.constantPool));
+            sb.append(f);
         }
         sb.append("Methods: ").append(methods.length).append("\n");
         for (var m : methods) {
-            sb.append(m.toString(this.constantPool));
+            sb.append(m);
         }
 
         sb.append("Attributes: ").append(attributes.length).append("\n");
         for (var a : attributes) {
-            sb.append(a.toString((short) 2, this.constantPool));
+            sb.append(a);
         }
 
         return sb.toString();

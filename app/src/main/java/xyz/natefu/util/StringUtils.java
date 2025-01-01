@@ -31,10 +31,10 @@ public class StringUtils {
         return sb.toString();
     }
 
-    public static String attsToStr(Attribute[] attributes, ConstantPool constantPool) {
+    public static String attrsToStr(Attribute[] attributes) {
         var sb = new StringBuilder();
         for (var a : attributes) {
-            sb.append(a.toString((short) 2, constantPool));
+            sb.append(a);
         }
         return sb.toString();
     }

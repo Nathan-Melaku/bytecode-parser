@@ -129,6 +129,7 @@ class ClassParser {
                     attributes[k] = new Attribute(attNameIndex, read, cp);
                 }
                 fields[j] = new Field(
+                        cp,
                         accFlags,
                         ByteBuffer.wrap(nameIndex).getShort(),
                         ByteBuffer.wrap(descriptorIndex).getShort(),
@@ -169,6 +170,7 @@ class ClassParser {
                     attributes[k] = new Attribute(attNameIndex, read, cp);
                 }
                 methods[j] = new Method(
+                        cp,
                         accFlags,
                         ByteBuffer.wrap(nameIndex).getShort(),
                         ByteBuffer.wrap(descriptorIndex).getShort(),

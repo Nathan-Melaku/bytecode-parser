@@ -59,7 +59,8 @@ public class CodeAtt implements AttributeInfo{
         this.attributes = attrs;
     }
 
-    public String toString(ConstantPool constantPool) {
+    @Override
+    public String toString() {
         var sb = new StringBuilder();
 
         sb.append("Code Block").append("\n")
@@ -71,7 +72,7 @@ public class CodeAtt implements AttributeInfo{
             sb.append(e);
         }
         for (var a : attributes) {
-            sb.append(a.toString((short) 3, constantPool));
+            sb.append(a.toString(3));
         }
         return sb.toString();
     }
