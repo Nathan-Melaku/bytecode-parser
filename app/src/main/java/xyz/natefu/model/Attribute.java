@@ -16,7 +16,7 @@ public class Attribute {
     public Attribute(short attributeIndex, byte[] attributeInfo, ConstantPool constantPool) throws IllegalArgumentException {
         this.constantPool = constantPool;
         this.attributeIndex = attributeIndex;
-        var str =  this.constantPool.get(attributeIndex);;
+        var str =  this.constantPool.get(attributeIndex);
 
         if (!(str instanceof ConstantUtf8)){
             throw new IllegalArgumentException();

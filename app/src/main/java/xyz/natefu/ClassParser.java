@@ -8,7 +8,7 @@ import xyz.natefu.model.constantpool.ConstantPool;
 class ClassParser {
     public ClassFile parseFile(String filename) throws Exception {
         var classLoader = getClass().getClassLoader();
-        try (var sample = classLoader.getResourceAsStream(filename);) {
+        try (var sample = classLoader.getResourceAsStream(filename)) {
             var builder = new ClassFile.Builder();
             // read magic
             assert sample != null;
