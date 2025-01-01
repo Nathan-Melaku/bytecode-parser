@@ -13,7 +13,7 @@ public class ClassFile {
     private final short minorVersion;
     private final short majorVersion;
     private final ConstantPool constantPool;
-    private final byte[] accessFlags;
+    private final EnumSet<AccessFlag> accessFlags;
     private final short thisClass;
     private final short superClass;
     private final short[] interfaces;
@@ -40,7 +40,7 @@ public class ClassFile {
         private short minorVersion;
         private short majorVersion;
         private ConstantPool constantPool;
-        private byte[] accessFlags;
+        private EnumSet<AccessFlag> accessFlags;
         private short thisClass;
         private short superClass;
         private short[] interfaces;
@@ -104,7 +104,7 @@ public class ClassFile {
         sb.append("MinorVersion: ").append(this.minorVersion).append("\n");
         sb.append("MajorVersion: ").append(this.majorVersion).append("\n");
         sb.append("ConstantPool: ").append("\n").append(this.constantPool).append("\n");
-        sb.append("AccessFlags: ").append(StringUtils.bufToStr(accessFlags)).append("\n");
+        sb.append("AccessFlags: ").append(accessFlags).append("\n");
         sb.append("ThisClass: #").append(this.thisClass).append(" ")
             .append(StringUtils.getClassName(this.thisClass, this.constantPool)).append("\n");
         sb.append("SuperClass: #").append(this.superClass).append(" ")

@@ -64,7 +64,7 @@ class ClassParser {
             if (read.length != 2) {
                 throw new IllegalArgumentException();
             }
-            builder.accessFlags(read);
+            builder.accessFlags(AccessFlag.collectAccessFlags(AccessFlag.Context.CLASS, read));
 
             // read this_class
             read = sample.readNBytes(2);
@@ -104,14 +104,15 @@ class ClassParser {
             var field_count = ByteBuffer.wrap(read).getShort();
             Field[] fields = new Field[field_count];
             for (int j = 0; j < field_count; j++) {
-                var accFlags = sample.readNBytes(2);
+                var accFlagsBuf = sample.readNBytes(2);
                 var nameIndex = sample.readNBytes(2);
                 var descriptorIndex = sample.readNBytes(2);
                 var attCountBuf = sample.readNBytes(2);
-                if (accFlags.length != 2 || nameIndex.length != 2 ||
+                if (accFlagsBuf.length != 2 || nameIndex.length != 2 ||
                         descriptorIndex.length != 2 || attCountBuf.length != 2) {
                     throw new IllegalArgumentException();
                 }
+                var accFlags = AccessFlag.collectAccessFlags(AccessFlag.Context.FIELD, accFlagsBuf);
                 var attCount = ByteBuffer.wrap(attCountBuf).getShort();
                 Attribute[] attributes = new Attribute[attCount];
                 for (int k = 0; k < attCount; k++) {
@@ -145,15 +146,16 @@ class ClassParser {
             var methodCount = ByteBuffer.wrap(read).getShort();
             Method[] methods = new Method[methodCount];
             for (int j = 0; j < methodCount; j++) {
-                var accFlags = sample.readNBytes(2);
+                var accFlagsBuf = sample.readNBytes(2);
                 var nameIndex = sample.readNBytes(2);
                 var descriptorIndex = sample.readNBytes(2);
                 var attCountBuf = sample.readNBytes(2);
-                if (accFlags.length != 2 || nameIndex.length != 2 ||
+                if (accFlagsBuf.length != 2 || nameIndex.length != 2 ||
                         descriptorIndex.length != 2 || attCountBuf.length != 2) {
                     throw new IllegalArgumentException();
                 }
                 var attCount = ByteBuffer.wrap(attCountBuf).getShort();
+                var accFlags = AccessFlag.collectAccessFlags(AccessFlag.Context.METHOD, accFlagsBuf);
                 Attribute[] attributes = new Attribute[attCount];
                 for (int k = 0; k < attCount; k++) {
                     var attIndexBuf = sample.readNBytes(2);

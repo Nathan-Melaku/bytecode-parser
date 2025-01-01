@@ -1,4 +1,5 @@
 public class Q13 {
+    private String buf = "what";
 
     public static void main(String[] args) {
         var test1 = "III";
