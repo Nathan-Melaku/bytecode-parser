@@ -48,59 +48,48 @@ public class ClassFile {
         private Method[] methods;
         private Attribute[] attributes;
 
-        public Builder magic(byte[] magic) {
+        public void magic(byte[] magic) {
             this.magic = magic;
-            return this;
         }
 
-        public Builder minorVersion(short minorVersion) {
+        public void minorVersion(short minorVersion) {
             this.minorVersion = minorVersion;
-            return this;
         }
 
-        public Builder majorVersion(short majorVersion) {
+        public void majorVersion(short majorVersion) {
             this.majorVersion = majorVersion;
-            return this;
         }
 
-        public Builder constantPool(ConstantPool constantPool) {
+        public void constantPool(ConstantPool constantPool) {
             this.constantPool = constantPool;
-            return this;
         }
 
-        public Builder accessFlags(byte[] accessFlags) {
+        public void accessFlags(EnumSet<AccessFlag> accessFlags) {
             this.accessFlags = accessFlags;
-            return this;
         }
 
-        public Builder thisClass(short thisClass) {
+        public void thisClass(short thisClass) {
             this.thisClass = thisClass;
-            return this;
         }
 
-        public Builder superClass(short superClass) {
+        public void superClass(short superClass) {
             this.superClass = superClass;
-            return this;
         }
 
-        public Builder interfaces(short[] interfaces) {
+        public void interfaces(short[] interfaces) {
             this.interfaces = interfaces;
-            return this;
         }
 
-        public Builder fields(Field[] fields) {
+        public void fields(Field[] fields) {
             this.fields = fields;
-            return this;
         }
 
-        public Builder methods(Method[] methods) {
+        public void methods(Method[] methods) {
             this.methods = methods;
-            return this;
         }
 
-        public Builder attributes(Attribute[] attributes) {
+        public void attributes(Attribute[] attributes) {
             this.attributes = attributes;
-            return this;
         }
 
         public ClassFile build() {
