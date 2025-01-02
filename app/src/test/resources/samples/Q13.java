@@ -12,13 +12,23 @@ public class Q13 {
         System.out.println(test3 + " => " + romanToInt(test3));
         System.out.println(test4 + " => " + romanToInt(test4));
 
-        assert romanToInt(test1) == 3;
-        assert romanToInt(test2) == 58;
-        assert romanToInt(test3) == 1994;
-        assert romanToInt(test4) == 3999;
+        try {
+            var a1 = romanToInt(test1);
+            var a2 = romanToInt(test2);
+            var a3 = romanToInt(test3);
+            var a4 = romanToInt(test4);
+
+            assert a1 == 3;
+            assert a2 == 58;
+            assert a3 == 1994;
+            assert a4 == 3999;
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error Encounterd");
+        }
     }
 
-    public static int romanToInt(String s) {
+    public static int romanToInt(String s) throws IllegalArgumentException {
         var sum = 0;
         for (int i = 0; i < s.length(); i++) {
             sum += switch (s.charAt(i)) {
@@ -59,7 +69,7 @@ public class Q13 {
                         yield 1;
                     }
                  }
-                 default -> 0;
+                 default -> throw new IllegalArgumentException();
              };
         }
 

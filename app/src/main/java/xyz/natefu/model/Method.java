@@ -5,22 +5,14 @@ import xyz.natefu.util.StringUtils;
 
 import java.util.EnumSet;
 
-public class Method {
-    /* constantPool here only for toString. not sure if it is still worth it*/
-    private final ConstantPool constantPool;
-    private final EnumSet<AccessFlag> accessFlags;
-    private final short nameIndex;
-    private final short descriptorIndex;
-    private final Attribute[] attributes;
-
-    public Method( ConstantPool constantPool, EnumSet<AccessFlag> accessFlags,
-                   short nameIndex, short descriptorIndex, Attribute[] attributes) {
-        this.constantPool = constantPool;
-        this.accessFlags = accessFlags;
-        this.nameIndex = nameIndex;
-        this.descriptorIndex = descriptorIndex;
-        this.attributes = attributes;
-    }
+/**
+ * @param constantPool constantPool here only for toString. not sure if it is still worth it
+ */
+public record Method(ConstantPool constantPool,
+                     EnumSet<AccessFlag> accessFlags,
+                     short nameIndex,
+                     short descriptorIndex,
+                     Attribute[] attributes) {
 
     @Override
     public String toString() {
@@ -30,7 +22,7 @@ public class Method {
         sb.append("\t\tnameIndex #").append(this.nameIndex).append(" ")
                 .append(StringUtils.getUtf8(this.nameIndex, this.constantPool)).append("\n");
         sb.append("\t\tdescriptorIndex #").append(this.descriptorIndex).append(" ")
-            .append(StringUtils.getUtf8(this.descriptorIndex, this.constantPool)).append("\n");
+                .append(StringUtils.getUtf8(this.descriptorIndex, this.constantPool)).append("\n");
         sb.append(StringUtils.attrsToStr(this.attributes)).append("\n");
         return sb.toString();
     }

@@ -35,6 +35,50 @@ public class ClassFile {
         this.attributes = builder.attributes;
     }
 
+    public byte[] getMagic() {
+        return magic;
+    }
+
+    public short getMinorVersion() {
+        return minorVersion;
+    }
+
+    public short getMajorVersion() {
+        return majorVersion;
+    }
+
+    public ConstantPool getConstantPool() {
+        return constantPool;
+    }
+
+    public EnumSet<AccessFlag> getAccessFlags() {
+        return accessFlags;
+    }
+
+    public short getThisClass() {
+        return thisClass;
+    }
+
+    public short getSuperClass() {
+        return superClass;
+    }
+
+    public short[] getInterfaces() {
+        return interfaces;
+    }
+
+    public Field[] getFields() {
+        return fields;
+    }
+
+    public Method[] getMethods() {
+        return methods;
+    }
+
+    public Attribute[] getAttributes() {
+        return attributes;
+    }
+
     public static class Builder {
         private byte[] magic;
         private short minorVersion;

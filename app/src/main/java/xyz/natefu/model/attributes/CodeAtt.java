@@ -1,5 +1,7 @@
 package xyz.natefu.model.attributes;
 
+import xyz.natefu.util.Constants;
+import xyz.natefu.model.IllegalByteCodeException;
 import xyz.natefu.model.Attribute;
 import xyz.natefu.model.constantpool.ConstantPool;
 import xyz.natefu.util.StringUtils;
@@ -7,21 +9,20 @@ import xyz.natefu.util.StringUtils;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class CodeAtt implements AttributeInfo{
-    final short maxStack;
-    final short maxLocals;
-    final byte[] code;
-    final ExceptionEntry[] exceptionTable;
-    final Attribute[] attributes;
+public record CodeAtt(short maxStack,
+                      short maxLocals,
+                      byte[] code,
+                      ExceptionEntry[] exceptionTable,
+                      Attribute[] attributes) implements AttributeInfo {
 
-    public CodeAtt(byte[] bytes, ConstantPool constantPool) {
-        this.maxStack = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0, 2)).getShort();
-        this.maxLocals = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 2, 4)).getShort();
+    public static CodeAtt getInstance(byte[] bytes, ConstantPool constantPool) throws IllegalByteCodeException {
+        var maxStack = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0, 2)).getShort();
+        var maxLocals = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 2, 4)).getShort();
 
         // read code block
         var index = 8;
         var codeLength = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 4, index)).getInt();
-        this.code = Arrays.copyOfRange(bytes, index, index + codeLength);
+        var code = Arrays.copyOfRange(bytes, index, index + codeLength);
         index += codeLength;
 
         // read exception table
@@ -32,31 +33,30 @@ public class CodeAtt implements AttributeInfo{
             exceptions[i] = new ExceptionEntry(Arrays.copyOfRange(bytes, index, index + 8));
             index += 8;
         }
-        this.exceptionTable = exceptions;
 
         // read attributes
-        var attCount = ByteBuffer.wrap(Arrays.copyOfRange(bytes,index, index + 2)).getShort();
+        var attCount = ByteBuffer.wrap(Arrays.copyOfRange(bytes, index, index + 2)).getShort();
         index += 2;
 
-        var attrs = new Attribute[attCount];
+        var attributes = new Attribute[attCount];
         for (int k = 0; k < attCount; k++) {
             var attIndexBuf = Arrays.copyOfRange(bytes, index, index + 2);
             index += 2;
             var attLenBuf = Arrays.copyOfRange(bytes, index, index + 4);
             index += 4;
             if (attIndexBuf.length != 2 || attLenBuf.length != 4) {
-                throw new IllegalArgumentException();
+                throw new IllegalByteCodeException(Constants.BAD_ATTRIBUTE_PARAMETER);
             }
             var attNameIndex = ByteBuffer.wrap(attIndexBuf).getShort();
             var attLength = ByteBuffer.wrap(attLenBuf).getInt();
             var read = Arrays.copyOfRange(bytes, index, index + attLength);
             index += attLength;
             if (read.length != attLength) {
-                throw new IllegalArgumentException();
+                throw new IllegalByteCodeException(Constants.BAD_ATTRIBUTE_INFO_LENGTH);
             }
-            attrs[k] = new Attribute(attNameIndex, read, constantPool);
+            attributes[k] = Attribute.getInstance(attNameIndex, read, constantPool);
         }
-        this.attributes = attrs;
+        return new CodeAtt(maxStack, maxLocals, code, exceptions, attributes);
     }
 
     @Override
