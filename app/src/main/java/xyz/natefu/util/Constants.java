@@ -1,6 +1,7 @@
 package xyz.natefu.util;
 
 public class Constants {
+    // exception messages
     public static final String BAD_ATTRIBUTE_INDEX = "";
     public static final String BAD_ATTRIBUTE_PARAMETER = "";
     public static final String BAD_ATTRIBUTE_INFO_LENGTH = "";
@@ -20,4 +21,5 @@ public class Constants {
     public static final String BAD_METHOD_COUNT = "";
     public static final String BAD_METHOD_PARAMETER = "";
     public static final String BAD_ATTRIBUTE_COUNT = "";
+
 }

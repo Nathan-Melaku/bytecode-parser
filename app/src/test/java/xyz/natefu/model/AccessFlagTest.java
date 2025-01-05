@@ -2,14 +2,15 @@ package xyz.natefu.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.nio.ByteBuffer;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AccessFlagTest {
 
     @Test
     void collectClassFlags() {
-        var flags = new byte[] { (byte) 0xF6 , (byte) 0x31};
-        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.CLASS, flags);
+        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.CLASS, 0xF631);
         assertEquals(9, set.size());
         assertTrue(set.contains(AccessFlag.ACC_PUBLIC));
         assertTrue(set.contains(AccessFlag.ACC_FINAL));
@@ -24,8 +25,7 @@ public class AccessFlagTest {
 
     @Test
     void collectInnerClassFlags() {
-        var flags = new byte[] { (byte) 0x76 , (byte) 0x1F};
-        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.INNER_CLASS, flags);
+        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.INNER_CLASS, 0x761F);
         assertEquals(10, set.size());
         assertTrue(set.contains(AccessFlag.ACC_PUBLIC));
         assertTrue(set.contains(AccessFlag.ACC_PRIVATE));
@@ -41,8 +41,7 @@ public class AccessFlagTest {
 
     @Test
     void collectMethodFlags() {
-        var flags = new byte[] {(byte) 0x1D, (byte) 0xFF};
-        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.METHOD, flags);
+        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.METHOD, 0x1DFF);
         assertEquals(12, set.size());
         assertTrue(set.contains(AccessFlag.ACC_PUBLIC));
         assertTrue(set.contains(AccessFlag.ACC_PRIVATE));
@@ -60,8 +59,7 @@ public class AccessFlagTest {
 
     @Test
     void collectMethodParameterFlags() {
-        var flags = new byte[] {(byte) 0x90, (byte) 0x10};
-        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.METHOD_PARAMETER, flags);
+        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.METHOD_PARAMETER, 0x9010);
         assertEquals(3, set.size());
         assertTrue(set.contains(AccessFlag.ACC_FINAL));
         assertTrue(set.contains(AccessFlag.ACC_SYNTHETIC));
@@ -70,8 +68,8 @@ public class AccessFlagTest {
 
     @Test
     void collectFieldFlags() {
-        var flags = new byte[] {(byte) 0x1D, (byte) 0xFF};
-        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.FIELD, flags);
+        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.FIELD, 0x50DF);
+        System.out.println(set);
         assertEquals(9, set.size());
         assertTrue(set.contains(AccessFlag.ACC_PUBLIC));
         assertTrue(set.contains(AccessFlag.ACC_PRIVATE));
@@ -86,8 +84,7 @@ public class AccessFlagTest {
 
     @Test
     void collectModuleFlags() {
-        var flags = new byte[] {(byte) 0x90, (byte) 0x20};
-        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.MODULE, flags);
+        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.MODULE, 0x9020);
         assertEquals(3, set.size());
         assertTrue(set.contains(AccessFlag.ACC_OPEN));
         assertTrue(set.contains(AccessFlag.ACC_SYNTHETIC));
@@ -96,8 +93,7 @@ public class AccessFlagTest {
 
     @Test
     void collectModuleExportsFlags() {
-        var flags = new byte[] {(byte) 0x90, (byte) 0x00};
-        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.MODULE_EXPORTS, flags);
+        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.MODULE_EXPORTS, 0x9000);
         assertEquals(2, set.size());
         assertTrue(set.contains(AccessFlag.ACC_SYNTHETIC));
         assertTrue(set.contains(AccessFlag.ACC_MANDATED));
@@ -105,8 +101,7 @@ public class AccessFlagTest {
 
     @Test
     void collectModuleOpensFlags() {
-        var flags = new byte[] {(byte) 0x90, (byte) 0x00};
-        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.MODULE_OPENS, flags);
+        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.MODULE_OPENS, 0x9000);
         assertEquals(2, set.size());
         assertTrue(set.contains(AccessFlag.ACC_SYNTHETIC));
         assertTrue(set.contains(AccessFlag.ACC_MANDATED));
@@ -114,8 +109,7 @@ public class AccessFlagTest {
 
     @Test
     void collectModuleRequiresFlags() {
-        var flags = new byte[] {(byte) 0x90, (byte) 0x60};
-        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.MODULE_REQUIRES, flags);
+        var set = AccessFlag.collectAccessFlags(AccessFlag.Context.MODULE_REQUIRES, 0x9060);
         assertEquals(4, set.size());
         assertTrue(set.contains(AccessFlag.ACC_SYNTHETIC));
         assertTrue(set.contains(AccessFlag.ACC_MANDATED));

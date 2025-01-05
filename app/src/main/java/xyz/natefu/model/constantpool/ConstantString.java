@@ -1,7 +1,8 @@
 package xyz.natefu.model.constantpool;
 
 import java.nio.ByteBuffer;
-import xyz.natefu.model.ConstantKind;
+
+import xyz.natefu.model.IllegalByteCodeException;
 
 public final class ConstantString extends ConstantPoolInfo {
     short tag = ConstantKind.CONSTANT_String;
@@ -9,7 +10,7 @@ public final class ConstantString extends ConstantPoolInfo {
 
     public ConstantString(byte[] bytes) throws IllegalArgumentException {
         if (bytes.length != 2) {
-            throw new IllegalArgumentException();
+            throw new IllegalByteCodeException("Bad string constant");
         }
 
         stringIndex = ByteBuffer.wrap(bytes).getShort();

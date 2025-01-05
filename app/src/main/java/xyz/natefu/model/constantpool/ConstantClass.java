@@ -1,6 +1,6 @@
 package xyz.natefu.model.constantpool;
 
-import xyz.natefu.model.ConstantKind;
+import xyz.natefu.model.IllegalByteCodeException;
 
 import java.nio.ByteBuffer;
 
@@ -10,7 +10,7 @@ public final class ConstantClass extends ConstantPoolInfo {
 
     public ConstantClass(byte[] bytes) throws IllegalArgumentException {
         if (bytes.length != 2) {
-            throw new IllegalArgumentException("2 bytes needed for a class constant");
+            throw new IllegalByteCodeException("2 bytes needed for a class constant");
         }
 
         this.nameIndex = ByteBuffer.wrap(bytes).getShort();

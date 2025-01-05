@@ -1,6 +1,6 @@
 package xyz.natefu.model.constantpool;
 
-import xyz.natefu.model.ConstantKind;
+import xyz.natefu.model.IllegalByteCodeException;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -12,7 +12,7 @@ public final class ConstantNameAndType extends ConstantPoolInfo {
 
     public ConstantNameAndType(byte[] bytes) throws IllegalArgumentException {
         if (bytes.length != 4) {
-            throw new IllegalArgumentException("4 bytes needed for a Fieldref constant");
+            throw new IllegalByteCodeException("4 bytes needed for a NameType constant");
         }
 
         var nIndex = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0, 2)).getShort();

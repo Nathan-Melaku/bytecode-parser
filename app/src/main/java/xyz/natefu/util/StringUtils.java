@@ -3,6 +3,7 @@ package xyz.natefu.util;
 import xyz.natefu.model.Attribute;
 import xyz.natefu.model.constantpool.ConstantClass;
 import xyz.natefu.model.constantpool.ConstantPool;
+import xyz.natefu.model.constantpool.ConstantString;
 import xyz.natefu.model.constantpool.ConstantUtf8;
 
 /**
@@ -10,13 +11,19 @@ import xyz.natefu.model.constantpool.ConstantUtf8;
  */
 public class StringUtils {
 
-    public static String getClassName(short index, ConstantPool constantPool) {
+    public static String getClassName(int index, ConstantPool constantPool) {
         var cls = (ConstantClass) constantPool.get(index);
         var utf = (ConstantUtf8) constantPool.get(cls.getNameIndex());
         return utf.getData();
     }
 
-    public static String getUtf8(short index, ConstantPool constantPool) {
+    public static String getString(int index, ConstantPool constantPool) {
+        var str = (ConstantString) constantPool.get(index);
+        var utf = (ConstantUtf8) constantPool.get(str.getStringIndex());
+        return utf.getData();
+    }
+
+    public static String getUtf8(int index, ConstantPool constantPool) {
         var utf = (ConstantUtf8) constantPool.get(index);
         return utf.getData();
     }

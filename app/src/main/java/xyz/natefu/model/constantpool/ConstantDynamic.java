@@ -1,6 +1,7 @@
 package xyz.natefu.model.constantpool;
 
-import xyz.natefu.model.ConstantKind;
+import xyz.natefu.model.IllegalByteCodeException;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -11,7 +12,7 @@ public final class ConstantDynamic extends ConstantPoolInfo {
 
     public ConstantDynamic(byte[] bytes){
         if (bytes.length != 4) {
-            throw new IllegalArgumentException();
+            throw new IllegalByteCodeException("Bad Dynamic constant");
         }
 
         bootStrapMethodAttrIndex = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0, 2)).getShort();

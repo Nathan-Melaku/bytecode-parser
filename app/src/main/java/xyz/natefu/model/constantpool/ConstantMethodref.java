@@ -3,7 +3,7 @@ package xyz.natefu.model.constantpool;
 import java.util.Arrays;
 import java.nio.ByteBuffer;
 
-import xyz.natefu.model.ConstantKind;
+import xyz.natefu.model.IllegalByteCodeException;
 
 public final class ConstantMethodref extends ConstantPoolInfo {
     short tag = ConstantKind.CONSTANT_MethodRef;
@@ -12,7 +12,7 @@ public final class ConstantMethodref extends ConstantPoolInfo {
 
     public ConstantMethodref(byte[] bytes) throws IllegalArgumentException {
         if (bytes.length != 4) {
-            throw new IllegalArgumentException("4 bytes needed for a Methodref constant");
+            throw new IllegalByteCodeException("4 bytes needed for a Methodref constant");
         }
 
         var cIndex = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0, 2)).getShort();

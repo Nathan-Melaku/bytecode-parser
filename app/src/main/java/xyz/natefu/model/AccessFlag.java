@@ -34,9 +34,7 @@ public enum AccessFlag {
         this.mask = mask;
     }
 
-    public static EnumSet<AccessFlag> collectAccessFlags(Context context, byte[] accessFlag) {
-        assert accessFlag.length == 2;
-        int flag = (accessFlag[0] << 8) | accessFlag[1];
+    public static EnumSet<AccessFlag> collectAccessFlags(Context context, int accessFlag) {
         var allowedEnums = switch (context) {
             case CLASS -> EnumSet.of(ACC_PUBLIC, ACC_FINAL, ACC_SUPER, ACC_INTERFACE,
                     ACC_ABSTRACT, ACC_SYNTHETIC, ACC_ANNOTATION, ACC_ENUM, ACC_MODULE);
@@ -54,7 +52,7 @@ public enum AccessFlag {
 
         EnumSet<AccessFlag> flags = EnumSet.noneOf(AccessFlag.class);
         for (var f : allowedEnums) {
-            if ((flag & f.mask) == f.mask) {
+            if ((((accessFlag & 0xFFFF) & f.mask) & 0xFFFF) == f.mask) {
                 flags.add(f);
             }
         }

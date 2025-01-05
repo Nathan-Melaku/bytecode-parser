@@ -1,6 +1,7 @@
 package xyz.natefu.model.constantpool;
 
-import xyz.natefu.model.ConstantKind;
+import xyz.natefu.model.IllegalByteCodeException;
+
 import java.nio.ByteBuffer;
 
 final class ConstantInteger extends ConstantPoolInfo {
@@ -9,8 +10,7 @@ final class ConstantInteger extends ConstantPoolInfo {
 
     ConstantInteger(byte[] bytes) throws IllegalArgumentException {
         if (bytes.length != 4) {
-            System.out.println("len: " + bytes.length);
-            throw new IllegalArgumentException();
+            throw new IllegalByteCodeException("Bad Integer");
         }
 
         data = ByteBuffer.wrap(bytes).getInt();

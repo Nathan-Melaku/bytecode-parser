@@ -1,6 +1,5 @@
 package xyz.natefu.model.constantpool;
 
-import xyz.natefu.model.ConstantKind;
 import java.nio.charset.StandardCharsets;
 
 public final class ConstantUtf8 extends ConstantPoolInfo {

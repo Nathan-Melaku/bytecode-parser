@@ -1,45 +1,46 @@
 package xyz.natefu;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import xyz.natefu.model.AccessFlag;
+import xyz.natefu.model.Attribute;
+import xyz.natefu.model.ClassFile;
+import xyz.natefu.model.attributes.BootStrapMethods;
 import xyz.natefu.model.attributes.CodeAtt;
+import xyz.natefu.model.attributes.ConstantValueAtt;
 import xyz.natefu.model.constantpool.ConstantClass;
 import xyz.natefu.model.constantpool.ConstantUtf8;
 import xyz.natefu.util.StringUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ClassParserTest {
-    ClassParser subject = new ClassParser();
+    ClassLoader classLoader = getClass().getClassLoader();
 
     @Test
+    @DisplayName("Should parse empty class")
     void shouldParseEmptyClass(){
         // GIVEN
-        var classLoader = getClass().getClassLoader();
         try (var inputStream = classLoader.getResourceAsStream("samples/EmptyClass.class")) {
-            assert inputStream != null;
             // WHEN
-            var classFile = subject.parseFile(inputStream);
-            var magic = classFile.getMagic();
-            var minorVersion = classFile.getMinorVersion();
-            var majorVersion = classFile.getMajorVersion();
-            var constantPool = classFile.getConstantPool();
-            var accessFlags = classFile.getAccessFlags();
-            var thisClass = classFile.getThisClass();
-            var superClass = classFile.getSuperClass();
-            var interfaces = classFile.getInterfaces();
-            var fields = classFile.getFields();
-            var methods = classFile.getMethods();
-            var attributes = classFile.getAttributes();
+            var classFile = ClassFile.fromInputStream(inputStream);
+            var magic = classFile.magic();
+            var minorVersion = classFile.minorVersion();
+            var majorVersion = classFile.majorVersion();
+            var constantPool = classFile.constantPool();
+            var accessFlags = classFile.accessFlags();
+            var thisClass = classFile.thisClass();
+            var superClass = classFile.superClass();
+            var interfaces = classFile.interfaces();
+            var fields = classFile.fields();
+            var methods = classFile.methods();
+            var attributes = classFile.attributes();
 
             // THEN
-            assertEquals(4, magic.length);
-            assertEquals((byte) 0xCA, magic[0]);
-            assertEquals((byte) 0xFE, magic[1]);
-            assertEquals((byte) 0xBA, magic[2]);
-            assertEquals((byte) 0xBE, magic[3]);
+            assertEquals(0xCAFEBABE, magic);
             assertEquals((short) 0, minorVersion);
             assertEquals((short) 67, majorVersion);
             assertEquals(12, constantPool.getLength());
@@ -76,19 +77,18 @@ class ClassParserTest {
             assertEquals("SourceFile", StringUtils.getUtf8(attributes[0].attributeIndex(), constantPool));
         } catch (IOException e) {
             // should never happen in a test.
-            assertTrue(true);
+            fail();
         }
     }
     @Test
+    @DisplayName("Should Parse methods")
     void shouldParseClassWithOneMethod(){
         // GIVEN
-        var classLoader = getClass().getClassLoader();
         try (var inputStream = classLoader.getResourceAsStream("samples/ClassWithMain.class")) {
-            assert inputStream != null;
             // WHEN
-            var classFile = subject.parseFile(inputStream);
-            var constantPool = classFile.getConstantPool();
-            var methods = classFile.getMethods();
+            var classFile = ClassFile.fromInputStream(inputStream);
+            var constantPool = classFile.constantPool();
+            var methods = classFile.methods();
 
             // THEN
             assertEquals(2, methods.length);
@@ -100,7 +100,89 @@ class ClassParserTest {
                     methods[1].descriptorIndex(), constantPool));
         } catch (IOException e) {
             // should never happen in a test.
-            assertTrue(true);
+            fail();
+        }
+    }
+
+    @Test
+    @DisplayName("Should Parse Constant value attribute")
+    void shouldParseConstantValue() {
+        // GIVEN
+        try (var inputStream = classLoader.getResourceAsStream("samples/ConstantValue.class")) {
+            // WHEN
+            var classFile = ClassFile.fromInputStream(inputStream);
+            var constantPool = classFile.constantPool();
+            var fields = classFile.fields();
+
+            assertEquals(1, fields.length);
+            var attributes = fields[0].attributes();
+            assertEquals(1, attributes.length);
+            var attributeInfo = attributes[0].attributeInfo();
+            assertInstanceOf(ConstantValueAtt.class, attributeInfo);
+            assertEquals("Constant",
+                    StringUtils.getString(((ConstantValueAtt) attributeInfo).valueIndex(), constantPool));
+        } catch (IOException e) {
+            // should never happen in a test.
+            fail();
+        }
+    }
+
+    @Test
+    @DisplayName("Should Parse BootStrapMethods Attribute")
+    void shouldParseBootStrapMethods() {
+        // GIVEN
+        try (var inputStream = classLoader.getResourceAsStream("samples/BootStrapMethods.class")) {
+            // WHEN
+            var classFile = ClassFile.fromInputStream(inputStream);
+            var constantPool = classFile.constantPool();
+            var attributes = classFile.attributes();
+
+            var bootStrapAttribute = Arrays.stream(attributes).filter(attribute -> {
+               if (constantPool.get(attribute.attributeIndex()) instanceof ConstantUtf8 utf8) {
+                   return utf8.getData().equals(Attribute.BootstrapMethods);
+               }
+               return false;
+            }).toArray();
+            // THEN
+            assertEquals(1, bootStrapAttribute.length);
+            var bootStrapAttInfo = ((Attribute) bootStrapAttribute[0]).attributeInfo();
+            assertInstanceOf(BootStrapMethods.class, bootStrapAttInfo);
+            BootStrapMethods.BootStrapMethod[] bootStrapMethods = ((BootStrapMethods) bootStrapAttInfo).bootStrapMethods();
+            assertEquals(3, bootStrapMethods.length);
+            var uniqueMethodRefs = Arrays.stream(bootStrapMethods)
+                    .map(BootStrapMethods.BootStrapMethod::methodRef)
+                    .distinct();
+            assertEquals(1, uniqueMethodRefs.count());
+        } catch (IOException e) {
+            // should never happen in a test.
+            fail();
+        }
+    }
+
+    @Test
+    @DisplayName("should parse NestHost attributes")
+    void shouldParseNestHostAttributes() {
+        // GIVEN
+        try (var inputStream = classLoader.getResourceAsStream("samples/NestedClass$FirstNestedClass.class")) {
+            // WHEN
+            var classFile = ClassFile.fromInputStream(inputStream);
+            var constantPool = classFile.constantPool();
+            var attributes = classFile.attributes();
+
+            var nestedHostAttributes = Arrays.stream(attributes).filter(attribute -> {
+                if (constantPool.get(attribute.attributeIndex()) instanceof ConstantUtf8 utf8) {
+                    return utf8.getData().equals(Attribute.NestHost);
+                }
+                return false;
+            }).toArray();
+
+            // THEN
+            assertEquals(1, nestedHostAttributes.length);
+            System.out.println(Arrays.toString(nestedHostAttributes));
+
+        } catch (IOException e){
+            // should never happen in a test.
+            fail();
         }
     }
 }

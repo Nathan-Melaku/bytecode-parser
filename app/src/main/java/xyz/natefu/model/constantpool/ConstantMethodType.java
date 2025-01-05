@@ -1,6 +1,7 @@
 package xyz.natefu.model.constantpool;
 
-import xyz.natefu.model.ConstantKind;
+import xyz.natefu.model.IllegalByteCodeException;
+
 import java.nio.ByteBuffer;
 
 public final class ConstantMethodType extends ConstantPoolInfo {
@@ -10,7 +11,7 @@ public final class ConstantMethodType extends ConstantPoolInfo {
 
     public ConstantMethodType(byte[] bytes) throws IllegalArgumentException {
         if (bytes.length != 2) {
-            throw new IllegalArgumentException();
+            throw new IllegalByteCodeException("Bad methodtype constant");
         }
 
         descriptorIndex = ByteBuffer.wrap(bytes).getShort();

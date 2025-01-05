@@ -1,6 +1,7 @@
 package xyz.natefu.model.constantpool;
 
-import xyz.natefu.model.ConstantKind;
+import xyz.natefu.model.IllegalByteCodeException;
+
 import java.nio.ByteBuffer;
 
 public final class ConstantModule extends ConstantPoolInfo {
@@ -9,7 +10,7 @@ public final class ConstantModule extends ConstantPoolInfo {
 
     public ConstantModule(byte[] bytes){
         if (bytes.length != 2) {
-            throw new IllegalArgumentException();
+            throw new IllegalByteCodeException("Bad Module constant");
         }
 
         nameIndex = ByteBuffer.wrap(bytes).getShort();
