@@ -63,6 +63,7 @@ public record Attribute(int attributeIndex,
                 case ConstantValue -> ConstantValueAtt.getInstance(reader);
                 case BootstrapMethods -> BootStrapMethods.getInstance(reader);
                 case NestHost -> NestHostAtt.getInstance(reader);
+                case LineNumberTable -> LineNumberTableAttr.getInstance(reader);
                 default -> new DefaultAtt(reader);
             };
 

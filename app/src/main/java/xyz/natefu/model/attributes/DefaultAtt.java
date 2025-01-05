@@ -15,6 +15,6 @@ public class DefaultAtt implements AttributeInfo {
 
     @Override
     public String toString() {
-        return StringUtils.bufToStr(bytes);
+        return "DefaultAtt" +  StringUtils.bufToStr(bytes);
     }
 }

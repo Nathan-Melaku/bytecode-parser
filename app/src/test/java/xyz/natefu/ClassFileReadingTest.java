@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 import xyz.natefu.model.AccessFlag;
 import xyz.natefu.model.Attribute;
 import xyz.natefu.model.ClassFile;
-import xyz.natefu.model.attributes.BootStrapMethods;
-import xyz.natefu.model.attributes.CodeAtt;
-import xyz.natefu.model.attributes.ConstantValueAtt;
+import xyz.natefu.model.attributes.*;
 import xyz.natefu.model.constantpool.ConstantClass;
 import xyz.natefu.model.constantpool.ConstantUtf8;
 import xyz.natefu.util.StringUtils;
@@ -17,7 +15,7 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ClassParserTest {
+class ClassFileReadingTest {
     ClassLoader classLoader = getClass().getClassLoader();
 
     @Test
@@ -169,17 +167,53 @@ class ClassParserTest {
             var constantPool = classFile.constantPool();
             var attributes = classFile.attributes();
 
-            var nestedHostAttributes = Arrays.stream(attributes).filter(attribute -> {
-                if (constantPool.get(attribute.attributeIndex()) instanceof ConstantUtf8 utf8) {
-                    return utf8.getData().equals(Attribute.NestHost);
-                }
-                return false;
-            }).toArray();
-
             // THEN
-            assertEquals(1, nestedHostAttributes.length);
-            System.out.println(Arrays.toString(nestedHostAttributes));
+            var nestHostFound = false;
+            for (var att : attributes) {
+                var info = att.attributeInfo();
+                if (info instanceof NestHostAtt nestHostAtt){
+                    var constantClass = constantPool.get(nestHostAtt.hostClassIndex());
+                    assertInstanceOf(ConstantClass.class, constantClass);
+                    var nestHostClassName = constantPool.get(((ConstantClass) constantClass).getNameIndex());
+                    assertInstanceOf(ConstantUtf8.class, nestHostClassName);
+                    assertEquals("NestedClass", ((ConstantUtf8) nestHostClassName).getData());
+                    nestHostFound = true;
+                }
+                System.out.println(info);
+            }
+            assertTrue(nestHostFound);
 
+        } catch (IOException e){
+            // should never happen in a test.
+            fail();
+        }
+    }
+
+    @Test
+    @DisplayName("should parse line number attribute")
+    void shouldParseLineNumberAttribute() {
+        // GIVEN
+        try (var inputStream = classLoader.getResourceAsStream("samples/ConstantValue.class")) {
+            // WHEN
+            var classFile = ClassFile.fromInputStream(inputStream);
+            var methods = classFile.methods();
+            // THEN
+            assertTrue(methods.length > 0);
+            for (var method : methods) {
+                var lineNumberAttrFound = false;
+                var attributes = method.attributes();
+                for (var attribute : attributes) {
+                    if (attribute.attributeInfo() instanceof CodeAtt codeAtt) {
+                        var codeAttributes = codeAtt.attributes();
+                        var lineNumberAttrs = Arrays.stream(codeAttributes)
+                                .filter(attribute1 -> attribute1.attributeInfo() instanceof LineNumberTableAttr)
+                                .count();
+                        lineNumberAttrFound = lineNumberAttrs > 0;
+                    }
+                }
+                System.out.println(Arrays.toString(attributes));
+                assertTrue(lineNumberAttrFound);
+            }
         } catch (IOException e){
             // should never happen in a test.
             fail();
