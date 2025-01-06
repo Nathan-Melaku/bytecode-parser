@@ -66,6 +66,8 @@ public record Attribute(int attributeIndex,
                 case LineNumberTable -> LineNumberTableAttribute.getInstance(reader);
                 case SourceFile -> SourceFileAttribute.getInstance(reader);
                 case StackMapTable -> StackMapTableAttribute.getInstance(reader);
+                case NestMembers -> NestMembersAttribute.getInstance(reader);
+                case InnerClasses -> InnerClassesAttribute.getInstance(reader);
                 default -> new CustomAttribute(reader, utf.getData(), length);
             };
 

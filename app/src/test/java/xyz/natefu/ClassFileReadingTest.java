@@ -190,6 +190,68 @@ class ClassFileReadingTest {
     }
 
     @Test
+    @DisplayName("should parse NestMembers attribute")
+    void shouldParseNestMembersAttribute() {
+        // GIVEN
+        try (var inputStream = classLoader.getResourceAsStream("samples/NestedClass.class")) {
+            // WHEN
+            var classFile = ClassFile.fromInputStream(inputStream);
+            var constantPool = classFile.constantPool();
+            var attributes = classFile.attributes();
+
+            // THEN
+            var attInfoOp = Arrays.stream(attributes)
+                    .map(Attribute::attributeInfo)
+                    .filter(attributeInfo -> attributeInfo instanceof NestMembersAttribute)
+                    .map(attr -> (NestMembersAttribute) attr)
+                    .findFirst();
+
+            assertTrue(attInfoOp.isPresent());
+            var attribute = attInfoOp.get();
+            assertEquals(1, attribute.classes().length);
+            var clazz = constantPool.get(attribute.classes()[0]);
+            assertInstanceOf(ConstantClass.class, clazz);
+            var nestedMember = constantPool.get(((ConstantClass) clazz).getNameIndex());
+            var nestedMemberName = ((ConstantUtf8) nestedMember).getData();
+            assertEquals("NestedClass$FirstNestedClass", nestedMemberName);
+        } catch (IOException e) {
+            // should never happen in a test.
+            fail();
+        }
+    }
+
+    @Test
+    @DisplayName("should parse inner classes.")
+    void shouldParseInnerClasses() {
+        try (var inputStream = classLoader.getResourceAsStream("samples/NestedClass.class")) {
+            // WHEN
+            var classFile = ClassFile.fromInputStream(inputStream);
+            var constantPool = classFile.constantPool();
+            var attributes = classFile.attributes();
+
+            // THEN
+            var attInfoOp = Arrays.stream(attributes)
+                    .map(Attribute::attributeInfo)
+                    .filter(attributeInfo -> attributeInfo instanceof InnerClassesAttribute)
+                    .map(attr -> (InnerClassesAttribute) attr)
+                    .findFirst();
+            assertTrue(attInfoOp.isPresent());
+            var attribute = attInfoOp.get();
+            assertEquals(1, attribute.classes().length);
+            var clazz = constantPool.get(attribute.classes()[0].innerClassInfoIndex());
+            assertInstanceOf(ConstantClass.class, clazz);
+            var innerClass = constantPool.get(((ConstantClass) clazz).getNameIndex());
+            var innerClassName = ((ConstantUtf8) innerClass).getData();
+            assertEquals("NestedClass$FirstNestedClass", innerClassName);
+            var innerName = ((ConstantUtf8) constantPool.get(attribute.classes()[0].innerNameIndex()));
+            assertEquals("FirstNestedClass", innerName.getData());
+        } catch (IOException e) {
+            // should never happen in a test.
+            fail();
+        }
+
+    }
+    @Test
     @DisplayName("should parse line number attribute")
     void shouldParseLineNumberAttribute() {
         // GIVEN
