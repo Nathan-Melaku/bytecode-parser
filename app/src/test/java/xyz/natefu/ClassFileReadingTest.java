@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import xyz.natefu.model.AccessFlag;
 import xyz.natefu.model.Attribute;
 import xyz.natefu.model.ClassFile;
+import xyz.natefu.model.Method;
 import xyz.natefu.model.attributes.*;
 import xyz.natefu.model.constantpool.ConstantClass;
 import xyz.natefu.model.constantpool.ConstantUtf8;
@@ -245,14 +246,37 @@ class ClassFileReadingTest {
         try (var inputStream = classLoader.getResourceAsStream("samples/DynamicMethodStackMap.class")) {
             // WHEN
             var classFile = ClassFile.fromInputStream(inputStream);
-            var constantPool = classFile.constantPool();
             var methods = classFile.methods();
 
             // THEN
-            System.out.println(Arrays.toString(methods));
+            assertEquals(4, methods.length);
+            var stackMapInfo = getStackMap(methods[1]);
+            assertEquals(6, stackMapInfo.entries().length);
+
+            stackMapInfo = getStackMap(methods[2]);
+            assertEquals(17, stackMapInfo.entries().length);
+
+            stackMapInfo = getStackMap(methods[3]);
+            assertEquals(2, stackMapInfo.entries().length);
+
         } catch (IOException e){
             // should never happen in a test.
             fail();
         }
+    }
+
+    private StackMapTableAttribute getStackMap(Method method){
+        var codeOpt = Arrays.stream(method.attributes())
+                .filter(attribute -> attribute.attributeInfo() instanceof CodeAttribute)
+                .findFirst();
+        assertTrue(codeOpt.isPresent());
+        var codeAttr = codeOpt.get();
+        var codeAttrInfo = (CodeAttribute) codeAttr.attributeInfo();
+        var stackMapOpt = Arrays.stream(codeAttrInfo.attributes())
+                .filter(attribute -> attribute.attributeInfo() instanceof StackMapTableAttribute)
+                .findFirst();
+        assertTrue(stackMapOpt.isPresent());
+        var stackMapAttr = stackMapOpt.get();
+        return (StackMapTableAttribute) stackMapAttr.attributeInfo();
     }
 }
