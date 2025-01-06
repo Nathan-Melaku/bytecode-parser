@@ -39,7 +39,7 @@ public record ClassFile(
         var magic = reader.readInt();
         var minorVersion = reader.readUnsignedShort();
         var majorVersion = reader.readUnsignedShort();
-        var constantPool = ConstantPool.readConstantPool(reader);
+        var constantPool = new ConstantPool(reader);
         reader.setConstantPool(constantPool);
         var attributeFactory = new Attribute.Factory(reader);
         var accFlags = reader.readUnsignedShort();

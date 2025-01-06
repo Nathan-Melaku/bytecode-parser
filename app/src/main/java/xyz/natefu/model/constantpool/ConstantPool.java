@@ -30,7 +30,7 @@ public class ConstantPool {
         this.constantPoolInfos = infos;
     }
 
-    public static ConstantPool readConstantPool(ClassReader reader) throws IOException {
+    public ConstantPool(ClassReader reader) throws IOException {
         // read constant pool count
         int constantPoolLen = reader.readUnsignedShort();
         ConstantPoolInfo[] infos = new ConstantPoolInfo[constantPoolLen - 1];
@@ -65,7 +65,7 @@ public class ConstantPool {
                 default -> throw new IllegalByteCodeException("Unknown constant " + tag);
             }
         }
-        return new ConstantPool(infos);
+        this.constantPoolInfos = infos;
     }
 
     public ConstantPoolInfo get(int i) throws IllegalArgumentException {

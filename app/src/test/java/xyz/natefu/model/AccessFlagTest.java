@@ -68,7 +68,6 @@ public class AccessFlagTest {
     @Test
     void collectFieldFlags() {
         var set = AccessFlag.collectAccessFlags(AccessFlag.Context.FIELD, 0x50DF);
-        System.out.println(set);
         assertEquals(9, set.size());
         assertTrue(set.contains(AccessFlag.ACC_PUBLIC));
         assertTrue(set.contains(AccessFlag.ACC_PRIVATE));
