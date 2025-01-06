@@ -1,4 +1,4 @@
-public class Q13 {
+public class DynamicMethodStackMap {
     private String buf = "what";
 
     public static void main(String[] args) {

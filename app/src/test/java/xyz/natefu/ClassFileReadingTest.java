@@ -214,4 +214,45 @@ class ClassFileReadingTest {
             fail();
         }
     }
+
+    @Test
+    @DisplayName("should parse source file attribute")
+    void shouldParseSourceFileAttribute() {
+        // GIVEN
+        try (var inputStream = classLoader.getResourceAsStream("samples/ConstantValue.class")) {
+            // WHEN
+            var classFile = ClassFile.fromInputStream(inputStream);
+            var constantPool = classFile.constantPool();
+            var attributes = classFile.attributes();
+            // THEN
+
+            var sourceFileAttOp = Arrays.stream(attributes)
+                    .filter(attribute -> attribute.attributeInfo() instanceof SourceFileAttribute)
+                    .findFirst();
+            assertTrue(sourceFileAttOp.isPresent());
+            var sourceFile = constantPool.get(((SourceFileAttribute) sourceFileAttOp.get().attributeInfo()).sourceFileIndex());
+            assertInstanceOf(ConstantUtf8.class, sourceFile);
+            assertEquals("ConstantValue.java", ((ConstantUtf8) sourceFile).getData());
+        } catch (IOException e){
+            // should never happen in a test.
+            fail();
+        }
+    }
+
+    @Test
+    @DisplayName("should parse stack map")
+    void shouldParseStackMap() {
+        try (var inputStream = classLoader.getResourceAsStream("samples/DynamicMethodStackMap.class")) {
+            // WHEN
+            var classFile = ClassFile.fromInputStream(inputStream);
+            var constantPool = classFile.constantPool();
+            var methods = classFile.methods();
+
+            // THEN
+            System.out.println(Arrays.toString(methods));
+        } catch (IOException e){
+            // should never happen in a test.
+            fail();
+        }
+    }
 }

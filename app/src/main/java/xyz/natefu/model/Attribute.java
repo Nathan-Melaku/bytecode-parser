@@ -57,14 +57,16 @@ public record Attribute(int attributeIndex,
                 throw new IllegalByteCodeException(Constants.BAD_ATTRIBUTE_INDEX);
             }
             var utf = (ConstantUtf8) reader.getConstant(attributeIndex);
-
+            var length = reader.readInt();
             AttributeInfo attributeInfoTemp = switch (utf.getData()) {
-                case Code -> CodeAtt.getInstance(reader, this);
-                case ConstantValue -> ConstantValueAtt.getInstance(reader);
-                case BootstrapMethods -> BootStrapMethods.getInstance(reader);
-                case NestHost -> NestHostAtt.getInstance(reader);
-                case LineNumberTable -> LineNumberTableAttr.getInstance(reader);
-                default -> new DefaultAtt(reader);
+                case Code -> CodeAttribute.getInstance(reader, this);
+                case ConstantValue -> ConstantValueAttribute.getInstance(reader);
+                case BootstrapMethods -> BootStrapMethodsAttribute.getInstance(reader);
+                case NestHost -> NestHostAttribute.getInstance(reader);
+                case LineNumberTable -> LineNumberTableAttribute.getInstance(reader);
+                case SourceFile -> SourceFileAttribute.getInstance(reader);
+                case StackMapTable -> StackMapTableAttribute.getInstance(reader, length);
+                default -> new CustomAttribute(reader, utf.getData(), length);
             };
 
             return new Attribute(attributeIndex, attributeInfoTemp);
