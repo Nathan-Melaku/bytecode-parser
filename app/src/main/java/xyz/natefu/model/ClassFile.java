@@ -34,7 +34,7 @@ public record ClassFile(
         Objects.requireNonNull(attributes);
     }
 
-    public static ClassFile fromInputStream(InputStream stream) throws IllegalByteCodeException, IOException {
+    public static ClassFile fromInputStream(InputStream stream) throws IOException {
         var reader = new ClassReader(stream);
         var magic = reader.readInt();
         var minorVersion = reader.readUnsignedShort();
@@ -46,44 +46,26 @@ public record ClassFile(
         var accessFlagsEnumSet = AccessFlag.collectAccessFlags(AccessFlag.Context.CLASS, accFlags);
         var thisClass = reader.readUnsignedShort();
         var superClass = reader.readUnsignedShort();
+
         var interfaceCount = reader.readUnsignedShort();
         int[] interfaces = new int[interfaceCount];
         for (int j = 0; j < interfaceCount; j++) {
             interfaces[j] = reader.readUnsignedShort();
         }
+
         var field_count = reader.readUnsignedShort();
         Field[] fields = new Field[field_count];
         for (int j = 0; j < field_count; j++) {
-            var accessFlag = reader.readUnsignedShort();
-            var accessFlags = AccessFlag.collectAccessFlags(AccessFlag.Context.FIELD, accessFlag);
-            var nameIndex = reader.readUnsignedShort();
-            var descriptorIndex = reader.readUnsignedShort();
-            var attributes = attributeFactory.readAttributes();
-            fields[j] = new Field(
-                    accessFlags,
-                    nameIndex,
-                    descriptorIndex,
-                    attributes);
+            fields[j] = Field.getInstance(reader, attributeFactory);
         }
 
-        // read methods
         var methodCount = reader.readUnsignedShort();
         Method[] methods = new Method[methodCount];
         for (int j = 0; j < methodCount; j++) {
-            var accFlag = reader.readUnsignedShort();
-            var accessFlags = AccessFlag.collectAccessFlags(AccessFlag.Context.METHOD, accFlag);
-            var nameIndex = reader.readUnsignedShort();
-            var descriptorIndex = reader.readUnsignedShort();
-            var attributes = attributeFactory.readAttributes();
-            methods[j] = new Method(
-                    accessFlags,
-                    nameIndex,
-                    descriptorIndex,
-                    attributes);
+            methods[j] = Method.getInstance(reader, attributeFactory);
         }
 
         var attributes = attributeFactory.readAttributes();
-
         return new ClassFile(magic,minorVersion,majorVersion,
                 constantPool,accessFlagsEnumSet,thisClass,
                 superClass,interfaces,fields,methods,attributes);
