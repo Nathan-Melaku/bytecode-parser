@@ -1,19 +1,17 @@
 package xyz.natefu.model.constantpool;
 
+import xyz.natefu.ClassReader;
 import xyz.natefu.model.IllegalByteCodeException;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public final class ConstantFloat extends ConstantPoolInfo {
-    short tag = ConstantKind.CONSTANT_Float;
+    short tag = ConstantPool.CONSTANT_Float;
     float data;
 
-    public ConstantFloat(byte[] bytes) {
-        if (bytes.length != 4) {
-            throw new IllegalByteCodeException("bad float");
-        }
-
-        data = ByteBuffer.wrap(bytes).getFloat();
+    public ConstantFloat(ClassReader reader) throws IOException {
+        this.data = reader.readFloat();
     }
 
     public String toString() {

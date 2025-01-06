@@ -62,8 +62,8 @@ class ClassFileReadingTest {
             assertEquals(1, methods[0].attributes().length);
             var code = methods[0].attributes()[0];
             assertEquals("Code", StringUtils.getUtf8(code.attributeIndex(), constantPool));
-            assertInstanceOf(CodeAtt.class, code.attributeInfo());
-            var codeAtt = (CodeAtt) code.attributeInfo();
+            assertInstanceOf(CodeAttribute.class, code.attributeInfo());
+            var codeAtt = (CodeAttribute) code.attributeInfo();
             assertEquals(1, codeAtt.maxStack());
             assertEquals(1, codeAtt.maxLocals());
             assertEquals(0, codeAtt.exceptionTable().length);
@@ -116,9 +116,9 @@ class ClassFileReadingTest {
             var attributes = fields[0].attributes();
             assertEquals(1, attributes.length);
             var attributeInfo = attributes[0].attributeInfo();
-            assertInstanceOf(ConstantValueAtt.class, attributeInfo);
+            assertInstanceOf(ConstantValueAttribute.class, attributeInfo);
             assertEquals("Constant",
-                    StringUtils.getString(((ConstantValueAtt) attributeInfo).valueIndex(), constantPool));
+                    StringUtils.getString(((ConstantValueAttribute) attributeInfo).valueIndex(), constantPool));
         } catch (IOException e) {
             // should never happen in a test.
             fail();
@@ -144,11 +144,11 @@ class ClassFileReadingTest {
             // THEN
             assertEquals(1, bootStrapAttribute.length);
             var bootStrapAttInfo = ((Attribute) bootStrapAttribute[0]).attributeInfo();
-            assertInstanceOf(BootStrapMethods.class, bootStrapAttInfo);
-            BootStrapMethods.BootStrapMethod[] bootStrapMethods = ((BootStrapMethods) bootStrapAttInfo).bootStrapMethods();
+            assertInstanceOf(BootStrapMethodsAttribute.class, bootStrapAttInfo);
+            BootStrapMethodsAttribute.BootStrapMethod[] bootStrapMethods = ((BootStrapMethodsAttribute) bootStrapAttInfo).bootStrapMethods();
             assertEquals(3, bootStrapMethods.length);
             var uniqueMethodRefs = Arrays.stream(bootStrapMethods)
-                    .map(BootStrapMethods.BootStrapMethod::methodRef)
+                    .map(BootStrapMethodsAttribute.BootStrapMethod::methodRef)
                     .distinct();
             assertEquals(1, uniqueMethodRefs.count());
         } catch (IOException e) {
@@ -171,15 +171,14 @@ class ClassFileReadingTest {
             var nestHostFound = false;
             for (var att : attributes) {
                 var info = att.attributeInfo();
-                if (info instanceof NestHostAtt nestHostAtt){
-                    var constantClass = constantPool.get(nestHostAtt.hostClassIndex());
+                if (info instanceof NestHostAttribute(int hostClassIndex)){
+                    var constantClass = constantPool.get(hostClassIndex);
                     assertInstanceOf(ConstantClass.class, constantClass);
                     var nestHostClassName = constantPool.get(((ConstantClass) constantClass).getNameIndex());
                     assertInstanceOf(ConstantUtf8.class, nestHostClassName);
                     assertEquals("NestedClass", ((ConstantUtf8) nestHostClassName).getData());
                     nestHostFound = true;
                 }
-                System.out.println(info);
             }
             assertTrue(nestHostFound);
 
@@ -203,15 +202,11 @@ class ClassFileReadingTest {
                 var lineNumberAttrFound = false;
                 var attributes = method.attributes();
                 for (var attribute : attributes) {
-                    if (attribute.attributeInfo() instanceof CodeAtt codeAtt) {
-                        var codeAttributes = codeAtt.attributes();
-                        var lineNumberAttrs = Arrays.stream(codeAttributes)
-                                .filter(attribute1 -> attribute1.attributeInfo() instanceof LineNumberTableAttr)
-                                .count();
-                        lineNumberAttrFound = lineNumberAttrs > 0;
+                    if (attribute.attributeInfo() instanceof CodeAttribute(_, _, _, _, Attribute[] codeAttributes)) {
+                        lineNumberAttrFound = Arrays.stream(codeAttributes)
+                                .anyMatch(attribute1 -> attribute1.attributeInfo() instanceof LineNumberTableAttribute);
                     }
                 }
-                System.out.println(Arrays.toString(attributes));
                 assertTrue(lineNumberAttrFound);
             }
         } catch (IOException e){

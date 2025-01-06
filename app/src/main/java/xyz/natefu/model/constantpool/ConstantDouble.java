@@ -1,19 +1,16 @@
 package xyz.natefu.model.constantpool;
 
-import xyz.natefu.model.IllegalByteCodeException;
+import xyz.natefu.ClassReader;
 
-import java.nio.ByteBuffer;
+import java.io.IOException;
 
 public final class ConstantDouble extends ConstantPoolInfo {
 
-    short tag = ConstantKind.CONSTANT_Double;
+    short tag = ConstantPool.CONSTANT_Double;
     double data;
 
-    public ConstantDouble(byte[] bytes) {
-        if (bytes.length != 8) {
-            throw new IllegalByteCodeException("Bad double constant");
-        }
-        data = ByteBuffer.wrap(bytes).getDouble();
+    public ConstantDouble(ClassReader reader) throws IOException {
+        this.data = reader.readDouble();
     }
 
     public String toString() {

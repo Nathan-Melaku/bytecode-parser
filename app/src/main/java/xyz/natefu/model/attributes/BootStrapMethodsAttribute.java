@@ -5,12 +5,11 @@ import xyz.natefu.ClassReader;
 import java.io.IOException;
 import java.util.Arrays;
 
-public record BootStrapMethods (
+public record BootStrapMethodsAttribute (
         BootStrapMethod[] bootStrapMethods
 ) implements AttributeInfo{
 
-    public static BootStrapMethods getInstance(ClassReader reader) throws IOException {
-        reader.skipBytes(4);
+    public static BootStrapMethodsAttribute getInstance(ClassReader reader) throws IOException {
         int numBootStrapMethods = reader.readUnsignedShort();
         BootStrapMethod[] bootStrapMethods = new BootStrapMethod[numBootStrapMethods];
         for (int i = 0; i < numBootStrapMethods; i++) {
@@ -22,7 +21,7 @@ public record BootStrapMethods (
             }
             bootStrapMethods[i] = new BootStrapMethod(methodRef, numArguments, arguments);
         }
-        return new BootStrapMethods(bootStrapMethods);
+        return new BootStrapMethodsAttribute(bootStrapMethods);
     }
     @Override
     public String toString() {

@@ -20,8 +20,8 @@ public class ClassReader {
         return dataInput.readUnsignedShort();
     }
 
-    public byte readByte() throws IOException {
-        return dataInput.readByte();
+    public int readUnsignedByte() throws IOException {
+        return dataInput.readUnsignedByte();
     }
 
     public byte[] readNBytes(int bytesToRead) throws IOException {
@@ -42,5 +42,21 @@ public class ClassReader {
 
     public void setConstantPool(ConstantPool constantPool) {
         this.constantPool = constantPool;
+    }
+
+    public String readUTF() throws IOException {
+        return dataInput.readUTF();
+    }
+
+    public float readFloat() throws IOException {
+        return dataInput.readFloat();
+    }
+
+    public long readLong() throws IOException {
+        return dataInput.readLong();
+    }
+
+    public double readDouble() throws IOException {
+        return dataInput.readDouble();
     }
 }

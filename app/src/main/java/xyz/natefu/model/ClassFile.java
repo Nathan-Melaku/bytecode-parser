@@ -12,9 +12,18 @@ import java.util.Objects;
 /**
  * ClassFile
  */
-public record ClassFile(int magic, int minorVersion, int majorVersion, ConstantPool constantPool,
-                        EnumSet<AccessFlag> accessFlags, int thisClass, int superClass, int[] interfaces,
-                        Field[] fields, Method[] methods, Attribute[] attributes) {
+public record ClassFile(
+        int magic,
+        int minorVersion,
+        int majorVersion,
+        ConstantPool constantPool,
+        EnumSet<AccessFlag> accessFlags,
+        int thisClass,
+        int superClass,
+        int[] interfaces,
+        Field[] fields,
+        Method[] methods,
+        Attribute[] attributes) {
 
     public ClassFile {
         Objects.requireNonNull(constantPool);
@@ -30,7 +39,7 @@ public record ClassFile(int magic, int minorVersion, int majorVersion, ConstantP
         var magic = reader.readInt();
         var minorVersion = reader.readUnsignedShort();
         var majorVersion = reader.readUnsignedShort();
-        var constantPool = ConstantPool.getConstantPool(reader);
+        var constantPool = ConstantPool.readConstantPool(reader);
         reader.setConstantPool(constantPool);
         var attributeFactory = new Attribute.Factory(reader);
         var accFlags = reader.readUnsignedShort();

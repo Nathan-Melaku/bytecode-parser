@@ -1,25 +1,23 @@
 package xyz.natefu.model.constantpool;
 
+import xyz.natefu.ClassReader;
 import xyz.natefu.model.IllegalByteCodeException;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public final class ConstantMethodHandle extends ConstantPoolInfo {
-    short tag = ConstantKind.CONSTANT_MethodHandle;
-    byte referenceKind;
-    short referenceIndex;
+    short tag = ConstantPool.CONSTANT_MethodHandle;
+    int referenceKind;
+    int referenceIndex;
 
-    public ConstantMethodHandle(byte[] bytes) throws IllegalArgumentException {
-        if (bytes.length != 3) {
-            throw new IllegalByteCodeException("Bad MethodHandle constant");
-        }
-
-        referenceKind = bytes[0];
-        referenceIndex = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 1, 3)).getShort();
+    public ConstantMethodHandle(ClassReader reader) throws IllegalArgumentException, IOException {
+        referenceKind = reader.readUnsignedByte();
+        referenceIndex = reader.readUnsignedShort();
     }
 
     public String toString() {
-        return "MethodHandle\t[ referencekind " + referenceKind + ", referenceindex #" + referenceIndex + " ]";
+        return "MethodHandle\t[ referenceKind " + referenceKind + ", referenceIndex #" + referenceIndex + " ]";
     }
 }

@@ -5,11 +5,9 @@ import xyz.natefu.ClassReader;
 import java.io.IOException;
 import java.util.Arrays;
 
-public record LineNumberTableAttr (LineNumber[] lineNumberTable) implements AttributeInfo {
+public record LineNumberTableAttribute(LineNumber[] lineNumberTable) implements AttributeInfo {
 
-    public static LineNumberTableAttr getInstance(ClassReader reader) throws IOException {
-
-        reader.skipBytes(4);
+    public static LineNumberTableAttribute getInstance(ClassReader reader) throws IOException {
         var lineNumberTableLength = reader.readUnsignedShort();
         LineNumber[] lineNumbers = new LineNumber[lineNumberTableLength];
         for (int i = 0; i < lineNumberTableLength; i++) {
@@ -18,7 +16,7 @@ public record LineNumberTableAttr (LineNumber[] lineNumberTable) implements Attr
             lineNumbers[i] = new LineNumber(sPc, lineNumber);
         }
 
-        return new LineNumberTableAttr(lineNumbers);
+        return new LineNumberTableAttribute(lineNumbers);
     }
 
     public record LineNumber(int startPc, int lineNumber) {}

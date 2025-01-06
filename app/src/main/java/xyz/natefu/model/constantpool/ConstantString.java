@@ -1,22 +1,18 @@
 package xyz.natefu.model.constantpool;
 
-import java.nio.ByteBuffer;
+import xyz.natefu.ClassReader;
 
-import xyz.natefu.model.IllegalByteCodeException;
+import java.io.IOException;
 
 public final class ConstantString extends ConstantPoolInfo {
-    short tag = ConstantKind.CONSTANT_String;
-    short stringIndex;
+    short tag = ConstantPool.CONSTANT_String;
+    int stringIndex;
 
-    public ConstantString(byte[] bytes) throws IllegalArgumentException {
-        if (bytes.length != 2) {
-            throw new IllegalByteCodeException("Bad string constant");
-        }
-
-        stringIndex = ByteBuffer.wrap(bytes).getShort();
+    public ConstantString(ClassReader reader) throws IOException {
+        this.stringIndex = reader.readUnsignedShort();
     }
 
-    public short getStringIndex() {
+    public int getStringIndex() {
         return stringIndex;
     }
 

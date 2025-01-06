@@ -1,26 +1,25 @@
 package xyz.natefu.model.constantpool;
 
+import xyz.natefu.ClassReader;
 import xyz.natefu.model.IllegalByteCodeException;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public final class ConstantDynamic extends ConstantPoolInfo {
-    short tag = ConstantKind.CONSTANT_Dynamic;
-    short bootStrapMethodAttrIndex;
-    short nameAndTypeIndex;
+    short tag = ConstantPool.CONSTANT_Dynamic;
+    int bootStrapMethodAttrIndex;
+    int nameAndTypeIndex;
 
-    public ConstantDynamic(byte[] bytes){
-        if (bytes.length != 4) {
-            throw new IllegalByteCodeException("Bad Dynamic constant");
-        }
+    public ConstantDynamic(ClassReader reader) throws IOException {
 
-        bootStrapMethodAttrIndex = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0, 2)).getShort();
-        nameAndTypeIndex = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 2, 4)).getShort();
+        bootStrapMethodAttrIndex = reader.readUnsignedShort();
+        nameAndTypeIndex = reader.readUnsignedShort();
     }
 
     public String toString() {
-        return "Dynamic\t\t\t[ " + "bootstrapmethodattrindex #" + bootStrapMethodAttrIndex +
-               ", nameandtypeindex #" + nameAndTypeIndex + " ]";
+        return "Dynamic\t\t\t[ " + "bootStrapMethodAttrIndex #" + bootStrapMethodAttrIndex +
+               ", nameAndTypeIndex #" + nameAndTypeIndex + " ]";
     }
 }

@@ -1,19 +1,16 @@
 package xyz.natefu.model.constantpool;
 
-import xyz.natefu.model.IllegalByteCodeException;
+import xyz.natefu.ClassReader;
 
-import java.nio.ByteBuffer;
+import java.io.IOException;
 
 public final class ConstantLong extends ConstantPoolInfo {
 
-    short tag = ConstantKind.CONSTANT_Long;
+    short tag = ConstantPool.CONSTANT_Long;
     long data;
 
-    public ConstantLong(byte[] bytes) {
-        if (bytes.length != 4 ) {
-            throw new IllegalByteCodeException("Bad Long constant");
-        }
-        data = ByteBuffer.wrap(bytes).getLong();
+    public ConstantLong(ClassReader reader) throws IOException {
+        this.data = reader.readLong();
     }
 
     public String toString() {
